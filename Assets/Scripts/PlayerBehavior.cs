@@ -7,6 +7,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Represents the cardinal directions (South, North, West, East)
 public enum CardinalDirections { CARDINAL_S, CARDINAL_N, CARDINAL_W, CARDINAL_E };
@@ -21,10 +22,22 @@ public class PlayerBehavior : MonoBehaviour
     public Sprite m_rightSprite = null;
     public Sprite m_backSprite = null;
 
+    private string currentAnswer = "000";
+    private string codehacking = "false";
+    private string winAnswer = "715";
+    public GameObject teleportWhenWin = null;
     public GameObject m_fireBall = null; // Object the player can shoot
-
+    
     public GameObject m_map = null;
+    public GameObject m_tableau = null;
     public DialogManager m_dialogDisplayer;
+    public GameObject m_compagnon = null;
+    public GameObject doorToDestroy = null;
+    public GameObject CompagnonAppear = null;
+    public GameObject dialogcompagnon = null;
+    public GameObject porte = null;
+    private int nbCollectable = 0;
+
 
     public AudioClip m_mapSound = null;
     private Dialog m_closestNPCDialog;
@@ -54,8 +67,26 @@ public class PlayerBehavior : MonoBehaviour
 
         // Moves the player regarding the inputs
         Move();
-    }
+        
+        // If a dialog is on screen, the player should not be updated
+        // If the map is displayed, the player should not be updated
+        if (m_dialogDisplayer.IsOnScreen() || m_tableau.activeSelf)
+        {
+            return;
+        }
 
+        if (nbCollectable == 3)
+        {
+            m_compagnon.SetActive(true); 
+            dialogcompagnon.SetActive(true);
+            doorToDestroy.SetActive(false);
+            porte.SetActive(false);
+        }
+
+        // Moves the player regarding the inputs
+        Move();
+    }
+    
     private void Move()
     {
         float horizontalOffset = Input.GetAxis("Horizontal");
@@ -106,6 +137,11 @@ public class PlayerBehavior : MonoBehaviour
             m_map.SetActive(!m_map.activeSelf);
         }
 
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            m_tableau.SetActive(!m_tableau.activeSelf);
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
@@ -113,7 +149,8 @@ public class PlayerBehavior : MonoBehaviour
 
         // If a dialog is on screen, the player should not be updated
         // If the map is displayed, the player should not be updated
-        if (m_dialogDisplayer.IsOnScreen() || m_map.activeSelf)
+
+        if (m_dialogDisplayer.IsOnScreen() || m_tableau.activeSelf)
         {
             return;
         }
@@ -135,11 +172,17 @@ public class PlayerBehavior : MonoBehaviour
                 ShootFireball();
             }
         }
+        if (codehacking == "false")
+        {
+            CheckAnswer();
+        }
     }
 
-    // Changes the player sprite regarding it position
-    // (back when going North, front when going south, right when going east, left when going west)
-    private void ChangeSpriteToMatchDirection()
+      
+
+// Changes the player sprite regarding it position
+// (back when going North, front when going south, right when going east, left when going west)
+private void ChangeSpriteToMatchDirection()
     {
         if (m_direction == CardinalDirections.CARDINAL_N)
         {
@@ -177,7 +220,7 @@ public class PlayerBehavior : MonoBehaviour
             }
             if (m_direction == CardinalDirections.CARDINAL_E)
             {
-                fireBallBehavior.Launch(new Vector3(1f, 1f));
+                fireBallBehavior.Launch(new Vector3(1f, 0f));
             }
             if (m_direction == CardinalDirections.CARDINAL_W)
             {
@@ -185,7 +228,7 @@ public class PlayerBehavior : MonoBehaviour
             }
             if (m_direction == CardinalDirections.CARDINAL_S)
             {
-                fireBallBehavior.Launch(new Vector4(0f, -1f));
+                fireBallBehavior.Launch(new Vector2(0f, -1f));
             }
         }
     }
@@ -211,6 +254,14 @@ public class PlayerBehavior : MonoBehaviour
                 m_dialogDisplayer.SetDialog(instantDialog.GetDialog());
             }
         }
+        else if (collision.tag == "CompagnonAppear")
+        {
+            Dialog CompagnonAppear = collision.GetComponent<Dialog>();
+            if (CompagnonAppear != null)
+            {
+                m_dialogDisplayer.SetDialog(CompagnonAppear.GetDialog());
+            }
+        }
     }
 
     // This is automatically called by Unity when the gameObject (here the player)
@@ -227,6 +278,77 @@ public class PlayerBehavior : MonoBehaviour
         else if (collision.tag == "InstantDialog")
         {
             Destroy(collision.gameObject);
+        }
+        else if (collision.tag == "Collectible")
+        {
+            Destroy(collision.gameObject);
+            nbCollectable++;
+        }
+    }
+    private void CheckAnswer()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            currentAnswer += "1";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            currentAnswer += "2";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            currentAnswer += "3";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4))
+        {
+            currentAnswer += "4";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            currentAnswer += "5";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6))
+        {
+            currentAnswer += "6";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7))
+        {
+            currentAnswer += "7";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8))
+        {
+            currentAnswer += "8";
+            Debug.Log(currentAnswer);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9))
+        {
+            currentAnswer += "9";
+            Debug.Log(currentAnswer);
+        }
+
+        if (currentAnswer.Substring(currentAnswer.Length - winAnswer.Length, winAnswer.Length) == winAnswer)
+        {
+            codehacking = "true";
+            Debug.Log("code bon");
+            currentAnswer = "000";
+            teleportWhenWin.transform.parent.gameObject.SetActive(true);
+
+            this.transform.position = teleportWhenWin.transform.position;
         }
     }
 }

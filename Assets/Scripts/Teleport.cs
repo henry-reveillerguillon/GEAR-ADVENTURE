@@ -7,13 +7,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // This class is used to teleport the player from one scene to another
 // If the scene is different, then the previous scene is disabled and the new
 // one is enabled ; and the map indication is updated accordingly
-public class Teleport : MonoBehaviour {
+public class Teleport : MonoBehaviour
+{
+    public Image m_map = null;
+    public Sprite m_newMap = null;
     public GameObject m_teleportTo = null;
-    
+
     private GameObject m_player = null;
 
     private void Awake()
@@ -23,13 +27,19 @@ public class Teleport : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-     
+
         if (collision.gameObject.tag == "Player")
         {
             TeleportPlayer();
         }
 
+        if (m_newMap != null)
+        {
+            m_map.sprite = m_newMap;
+        }
+
     }
+
 
     private void TeleportPlayer()
     {
